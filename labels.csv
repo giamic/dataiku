@@ -1,0 +1,42 @@
+AAGE,age
+ACLSWKR,class of worker
+ADTIND,detailed industry recode
+ADTOCC,detailed occupation recode
+AHGA,education
+AHRSPAY,wage per hour
+AHSCOL,enroll in edu inst last wk
+AMARITL,marital stat
+AMJIND,major industry code
+AMJOCC,major occupation code
+ARACE,race
+AREORGN,hispanic origin
+ASEX,sex
+AUNMEM,member of a labor union
+AUNTYPE,reason for unemployment
+AWKSTAT,full or part time employment stat
+CAPGAIN,capital gains
+CAPLOSS,capital losses
+DIVVAL,dividends from stocks
+FILESTAT,tax filer stat
+GRINREG,region of previous residence
+GRINST,state of previous residence
+HHDFMX,detailed household and family stat
+HHDREL,detailed household summary in household
+MARSUPWT,instance weight
+MIGMTR1,migration code-change in msa
+MIGMTR3,migration code-change in reg
+MIGMTR4,migration code-move within reg
+MIGSAME,live in this house 1 year ago
+MIGSUN,migration prev res in sunbelt
+NOEMP,num persons worked for employer
+PARENT,family members under 18
+PEFNTVTY,country of birth father
+PEMNTVTY,country of birth mother
+PENATVTY,country of birth self
+PRCITSHP,citizenship
+SEOTR,own business or self employed
+VETQVA,fill inc questionnaire for veteran's admin
+VETYN,veterans benefits
+WKSWORK,weeks worked in year
+YEAR,year
+SAV,savings
