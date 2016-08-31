@@ -4,8 +4,6 @@ test <- read.csv("./us_census_full/census_income_test.csv", na.strings = "?", he
 lab <- read.csv("labels.csv", stringsAsFactors = FALSE, header = FALSE)
 colnames(learn) <- lab[, 1]
 colnames(test) <- lab[, 1]
-learnWeights <- learn$MARSUPWT
-testWeights <- test$MARSUPWT
 
 ### ADD A NUMERICAL COLUMN CORRESPONDING TO SAV
 library(dplyr)
