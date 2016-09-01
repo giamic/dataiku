@@ -62,6 +62,11 @@ learn$DIVYES <- as.factor(learn$DIVVAL > 0)
 test$CAPYES <- as.factor(test$CAPGAIN > 7364)    # This comes from the decision tree
 test$DIVYES <- as.factor(test$DIVVAL > 0)
 
+learnLR <- mutate(learn, WKSWORK = WKSWORK/52)
+learnLR <- mutate(learnLR, NOEMP = NOEMP/6)
+testLR <- mutate(test, WKSWORK = WKSWORK/52)
+learnLR <- mutate(testLR, NOEMP = NOEMP/6)
+
 # FIT WITH A LOGISTIC REGRESSION MODEL
 fitFormulaLR <- SAV ~ 
   ASEX+RACEWA+AGEMD+HOUSECHL+HOUSEHLD+
