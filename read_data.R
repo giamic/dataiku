@@ -5,11 +5,6 @@ lab <- read.csv("labels.csv", stringsAsFactors = FALSE, header = FALSE)
 colnames(learn) <- lab[, 1]
 colnames(test) <- lab[, 1]
 
-### ADD A NUMERICAL COLUMN CORRESPONDING TO SAV
-library(dplyr)
-learn <- mutate(learn, SAVN = as.numeric(learn$SAV=="50000+."))
-test <- mutate(test, SAVN = as.numeric(test$SAV=="50000+."))
-
 ### MAKE SURE THAT THE CODE ARE INTENDED AS FACTORS AND NOT AS NUMS
 learn$ADTIND <- as.factor(learn$ADTIND)
 learn$ADTOCC <- as.factor(learn$ADTOCC)

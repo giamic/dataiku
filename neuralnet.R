@@ -1,4 +1,4 @@
-library(dplyr)
+library(neuralnet)
 source("read_data.R")
 # CHANGE THE EDUCATION
 patternLow <- "Children|Less than 1st grade|1st 2nd 3rd or 4th grade|5th or 6th grade|7th and 8th grade|9th grade|10th grade|11th grade|12th grade no diploma"
@@ -25,6 +25,7 @@ learn$HOUSEHLD <- as.factor(learn$HHDFMX=="Householder")
 learn$HOUSECHL <- as.factor(grepl("Child|Grandchild|<18", learn$HHDFMX))
 test$HOUSEHLD <- as.factor(test$HHDFMX=="Householder")
 test$HOUSECHL <- as.factor(grepl("Child|Grandchild|<18", test$HHDFMX))
+learn$HOUSE <- learn$HHDFMX
 
 # WORK
 learn$WRKINC <- as.factor(grepl("Self-employed-incorporated", learn$ACLSWKR))
@@ -62,32 +63,41 @@ learn$DIVYES <- as.factor(learn$DIVVAL > 0)
 test$CAPYES <- as.factor(test$CAPGAIN > 7364)    # This comes from the decision tree
 test$DIVYES <- as.factor(test$DIVVAL > 0)
 
-# FIT WITH A LOGISTIC REGRESSION MODEL
-fitFormulaLR <- SAV ~ 
-  ASEX+RACEWA+AGEMD+HOUSECHL+HOUSEHLD+
-  EDLOW+EDBAC+EDMAS+EDSUP+
-  WKSWORK+NOEMP+WRKINC+WRKFED+WRKFT+OCCADP+OCCDEF+OCCSLT+OCCNOT+SEOTR+
-  DIVYES+CAPYES
-fitLR <- glm(fitFormulaLR, data=learn, family=binomial(link="logit"))
-summary(fitLR)
+# FIT WITH A NEURAL NETWORK
+# n <- names(learn)
+# fitFormulaNN <- as.formula(paste("SAV ~", paste(n[!n %in% "SAV"], collapse = " + ")))
+m <- model.matrix( ~
+  SAV+ASEX+RACEWA+AGEMD+HOUSECHL+HOUSEHLD+EDLOW+EDBAC+EDMAS+EDSUP+WKSWORK+
+    NOEMP+WRKINC+WRKFED+WRKFT+OCCADP+OCCDEF+OCCSLT+OCCNOT+SEOTR+DIVYES+CAPYES,
+  data = learn
+  )
+colnames(m)[2] = "SAV50000"
+fitFormulaNN <- SAV50000 ~
+  ASEXMale+CAPYESTRUE+HOUSEHLDTRUE+NOEMP+WRKINCTRUE+OCCADPTRUE+RACEWATRUE+AGEMDTRUE+
+  # HOUSECHLTRUE+
+  # EDLOWTRUE+EDBACTRUE+EDMASTRUE+EDSUPTRUE+
+  # WKSWORK+WRKFEDTRUE+WRKFTTRUE+OCCDEFTRUE+OCCSLTTRUE+OCCNOTTRUE+SEOTR1+SEOTR2+
+  DIVYESTRUE
+fitNN <- neuralnet(fitFormulaNN, data=m, hidden=c(10))
+summary(fitNN)
 
 # TEST THE FIT
-predLearnLR <- predict(fitLR, learn, type="response")
-predFactorLearnLR <- cut(predLearnLR, breaks=c(0, 0.5, 1), labels=c("-50000.", "50000+"))
-TabLearnLR <- table(learn$SAV, predFactorLearnLR, dnn=c("actual", "predicted"))
-TP <- TabLearnLR[2,2]    # True positive
-TN <- TabLearnLR[1,1]    # True negative
-FP <- TabLearnLR[1,2]    # False positive
-FN <- TabLearnLR[2,1]    # False negative
-FScoreLearnLR <- 2*TP/(2*TP+FN+FP)    # Gives a measure of the goodness of the prediction, comprised between 0 (bad) and 1 (perfect)
-FScoreLearnLR
+predLearnNN <- predict(fitNN, learn, type="response")
+predFactorLearnNN <- cut(predLearnNN, breaks=c(-Inf, 0.5, Inf), labels=c("-50000.", "50000+"))
+TabLearnNN <- table(learn$SAV, predFactorLearnNN, dnn=c("actual", "predicted"))
+TP <- TabLearnNN[2,2]    # True positive
+TN <- TabLearnNN[1,1]    # True negative
+FP <- TabLearnNN[1,2]    # False positive
+FN <- TabLearnNN[2,1]    # False negative
+FScoreLearnNN <- 2*TP/(2*TP+FN+FP)    # Gives a measure of the goodness of the prediction, comprised between 0 (bad) and 1 (perfect)
+FScoreLearnNN
 
-predTestLR <- predict(fitLR, test, type="response")
-predFactorTestLR <- cut(predTestLR, breaks=c(0, 0.5, 1), labels=c("-50000.", "50000+"))
-TabTestLR <- table(test$SAV, predFactorTestLR, dnn=c("actual", "predicted"))
-TP <- TabTestLR[2,2]    # True positive
-TN <- TabTestLR[1,1]    # True negative
-FP <- TabTestLR[1,2]    # False positive
-FN <- TabTestLR[2,1]    # False negative
-FScoreTestLR <- 2*TP/(2*TP+FN+FP)    # Gives a measure of the goodness of the prediction, comprised between 0 (bad) and 1 (perfect)
-FScoreTestLR
+predTestNN <- predict(fitNN, test, type="response")
+predFactorTestNN <- cut(predTestNN, breaks=c(-Inf, 0.5, Inf), labels=c("-50000.", "50000+"))
+TabTestNN <- table(test$SAV, predFactorTestNN, dnn=c("actual", "predicted"))
+TP <- TabTestNN[2,2]    # True positive
+TN <- TabTestNN[1,1]    # True negative
+FP <- TabTestNN[1,2]    # False positive
+FN <- TabTestNN[2,1]    # False negative
+FScoreTestNN <- 2*TP/(2*TP+FN+FP)    # Gives a measure of the goodness of the prediction, comprised between 0 (bad) and 1 (perfect)
+FScoreTestNN
